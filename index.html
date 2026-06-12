@@ -1,0 +1,538 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频链接提取工具 - Video Extractor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                        dark: '#1D2129',
+                        light: '#F2F3F5'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .gradient-bg {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+            .glass-effect {
+                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.9);
+            }
+            .shadow-soft {
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            }
+            .input-focus {
+                box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.2);
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <!-- 导航栏 -->
+    <nav class="w-full py-4 px-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
+                    <i class="fa fa-play-circle text-white text-xl"></i>
+                </div>
+                <span class="text-xl font-bold text-dark">VideoExtractor</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#" class="text-gray-600 hover:text-primary transition-colors">首页</a>
+                <a href="#features" class="text-gray-600 hover:text-primary transition-colors">功能</a>
+                <a href="#platforms" class="text-gray-600 hover:text-primary transition-colors">支持平台</a>
+                <a href="#faq" class="text-gray-600 hover:text-primary transition-colors">FAQ</a>
+            </div>
+            <button class="md:hidden text-gray-600">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="max-w-6xl mx-auto px-6 py-12">
+        <!-- Hero 区域 -->
+        <section class="text-center mb-16">
+            <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-dark mb-4 leading-tight">
+                一键提取<span class="text-primary">视频链接</span>
+            </h1>
+            <p class="text-[clamp(1rem,2vw,1.25rem)] text-gray-600 max-w-2xl mx-auto mb-8">
+                支持抖音、B站、YouTube等主流平台，快速解析并提取视频文件链接，简单高效
+            </p>
+            
+            <!-- 主要输入区域 -->
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-soft p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1 relative">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <i class="fa fa-link text-lg"></i>
+                            </div>
+                            <input type="text" id="videoUrl" placeholder="粘贴抖音、B站、YouTube等视频分享链接..." class="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl text-gray-700 focus:outline-none focus:border-primary focus:input-focus transition-all duration-200">
+                        </div>
+                        <button id="extractBtn" class="px-8 py-4 bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2">
+                            <i class="fa fa-magic"></i>
+                            <span>立即提取</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 快捷平台按钮 -->
+                    <div class="mt-6 flex flex-wrap justify-center gap-2">
+                        <span class="text-gray-500 text-sm mr-2">支持：</span>
+                        <button class="platform-btn px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-600 transition-colors" data-platform="douyin">
+                            <i class="fa fa-music mr-1"></i>抖音
+                        </button>
+                        <button class="platform-btn px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-600 transition-colors" data-platform="bilibili">
+                            <i class="fa fa-television mr-1"></i>B站
+                        </button>
+                        <button class="platform-btn px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-600 transition-colors" data-platform="youtube">
+                            <i class="fa fa-youtube-play mr-1"></i>YouTube
+                        </button>
+                        <button class="platform-btn px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-600 transition-colors" data-platform="xiaohongshu">
+                            <i class="fa fa-book mr-1"></i>小红书
+                        </button>
+                        <button class="platform-btn px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-600 transition-colors" data-platform="kuaishou">
+                            <i class="fa fa-video-camera mr-1"></i>快手
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结果展示区域 -->
+        <section id="resultSection" class="max-w-4xl mx-auto mb-16 hidden">
+            <div class="bg-white rounded-2xl shadow-soft overflow-hidden">
+                <!-- 结果头部 -->
+                <div class="gradient-bg px-6 py-4">
+                    <h3 class="text-white font-semibold text-lg flex items-center">
+                        <i class="fa fa-check-circle mr-2"></i>
+                        提取成功
+                    </h3>
+                </div>
+                
+                <!-- 视频信息 -->
+                <div class="p-6">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <!-- 视频缩略图 -->
+                        <div class="md:w-1/3">
+                            <div class="aspect-video bg-gray-100 rounded-xl overflow-hidden">
+                                <img id="videoThumbnail" src="" alt="视频封面" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                        
+                        <!-- 视频详情 -->
+                        <div class="md:w-2/3">
+                            <h4 id="videoTitle" class="text-xl font-bold text-dark mb-2">视频标题</h4>
+                            <p id="videoAuthor" class="text-gray-600 mb-4">
+                                <i class="fa fa-user mr-1"></i>作者：<span id="authorName">未知</span>
+                            </p>
+                            
+                            <!-- 下载链接区域 -->
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                                    <div class="flex items-center">
+                                        <i class="fa fa-download text-green-600 mr-2"></i>
+                                        <span class="text-green-700 font-medium">高清视频</span>
+                                    </div>
+                                    <a id="hdDownload" href="#" target="_blank" class="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors">
+                                        下载
+                                    </a>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                    <div class="flex items-center">
+                                        <i class="fa fa-download text-blue-600 mr-2"></i>
+                                        <span class="text-blue-700 font-medium">标清视频</span>
+                                    </div>
+                                    <a id="sdDownload" href="#" target="_blank" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
+                                        下载
+                                    </a>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
+                                    <div class="flex items-center">
+                                        <i class="fa fa-music text-purple-600 mr-2"></i>
+                                        <span class="text-purple-700 font-medium">音频文件</span>
+                                    </div>
+                                    <a id="audioDownload" href="#" target="_blank" class="px-4 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors">
+                                        下载
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- 复制链接按钮 -->
+                            <div class="mt-4 flex gap-2">
+                                <button id="copyHdLink" class="flex-1 px-4 py-2 border border-gray-200 hover:border-primary hover:text-primary rounded-lg text-sm transition-colors flex items-center justify-center">
+                                    <i class="fa fa-copy mr-1"></i>复制高清链接
+                                </button>
+                                <button id="copySdLink" class="flex-1 px-4 py-2 border border-gray-200 hover:border-primary hover:text-primary rounded-lg text-sm transition-colors flex items-center justify-center">
+                                    <i class="fa fa-copy mr-1"></i>复制标清链接
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 加载状态 -->
+        <section id="loadingSection" class="max-w-4xl mx-auto mb-16 hidden">
+            <div class="bg-white rounded-2xl shadow-soft p-12 text-center">
+                <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent mb-4"></div>
+                <p class="text-gray-600 text-lg">正在解析视频链接，请稍候...</p>
+                <p class="text-gray-400 text-sm mt-2">通常需要 3-5 秒钟</p>
+            </div>
+        </section>
+
+        <!-- 错误提示 -->
+        <section id="errorSection" class="max-w-4xl mx-auto mb-16 hidden">
+            <div class="bg-white rounded-2xl shadow-soft p-8 text-center border-l-4 border-red-500">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa fa-exclamation-triangle text-red-500 text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-bold text-dark mb-2">解析失败</h4>
+                <p id="errorMessage" class="text-gray-600">请检查链接是否正确，或尝试其他平台的链接</p>
+                <button id="retryBtn" class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                    重新尝试
+                </button>
+            </div>
+        </section>
+
+        <!-- 功能特点 -->
+        <section id="features" class="mb-16">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-dark mb-12">为什么选择我们</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl p-6 shadow-soft hover:shadow-lg transition-shadow">
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fa fa-bolt text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-dark mb-2">极速解析</h3>
+                    <p class="text-gray-600">采用先进的解析引擎，3秒内完成视频链接提取，高效稳定</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-soft hover:shadow-lg transition-shadow">
+                    <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fa fa-shield text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-dark mb-2">安全可靠</h3>
+                    <p class="text-gray-600">无需登录注册，不保存任何用户数据，保护您的隐私安全</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-soft hover:shadow-lg transition-shadow">
+                    <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fa fa-th-large text-accent text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-dark mb-2">多平台支持</h3>
+                    <p class="text-gray-600">支持抖音、B站、YouTube等数十个主流视频平台链接解析</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-soft hover:shadow-lg transition-shadow">
+                    <div class="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fa fa-download text-orange-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-dark mb-2">高清画质</h3>
+                    <p class="text-gray-600">支持提取高清、标清多种画质，满足您的不同需求</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-soft hover:shadow-lg transition-shadow">
+                    <div class="w-14 h-14 bg-teal-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fa fa-mobile text-secondary text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-dark mb-2">全设备适配</h3>
+                    <p class="text-gray-600">完美适配手机、平板、电脑等各种设备，随时随地使用</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-soft hover:shadow-lg transition-shadow">
+                    <div class="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fa fa-music text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-dark mb-2">音频提取</h3>
+                    <p class="text-gray-600">支持单独提取音频文件，一键获取背景音乐素材</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 支持平台 -->
+        <section id="platforms" class="mb-16">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-dark mb-12">支持的平台</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div class="bg-white rounded-xl p-4 shadow-soft text-center hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-black rounded-xl flex items-center justify-center mx-auto mb-2">
+                        <i class="fa fa-music text-white text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium">抖音</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-soft text-center hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-pink-600 rounded-xl flex items-center justify-center mx-auto mb-2">
+                        <i class="fa fa-television text-white text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium">哔哩哔哩</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-soft text-center hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center mx-auto mb-2">
+                        <i class="fa fa-youtube-play text-white text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium">YouTube</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-soft text-center hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-2">
+                        <i class="fa fa-video-camera text-white text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium">快手</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-soft text-center hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-red-400 rounded-xl flex items-center justify-center mx-auto mb-2">
+                        <i class="fa fa-book text-white text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium">小红书</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-soft text-center hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-2">
+                        <i class="fa fa-weibo text-white text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium">微博</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="mb-16">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-dark mb-12">常见问题</h2>
+            <div class="max-w-3xl mx-auto space-y-4">
+                <div class="bg-white rounded-xl shadow-soft overflow-hidden">
+                    <button class="faq-toggle w-full px-6 py-4 text-left font-medium flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <span>如何获取视频分享链接？</span>
+                        <i class="fa fa-chevron-down text-gray-400 transition-transform"></i>
+                    </button>
+                    <div class="faq-content px-6 pb-4 hidden">
+                        <p class="text-gray-600">在视频APP中点击「分享」按钮，然后选择「复制链接」即可。粘贴到上方输入框后点击提取按钮。</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-soft overflow-hidden">
+                    <button class="faq-toggle w-full px-6 py-4 text-left font-medium flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <span>提取的视频有水印吗？</span>
+                        <i class="fa fa-chevron-down text-gray-400 transition-transform"></i>
+                    </button>
+                    <div class="faq-content px-6 pb-4 hidden">
+                        <p class="text-gray-600">我们的工具会自动去除平台水印，提取无水印的原始视频文件。部分平台可能仍有创作者水印。</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-soft overflow-hidden">
+                    <button class="faq-toggle w-full px-6 py-4 text-left font-medium flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <span>支持哪些浏览器？</span>
+                        <i class="fa fa-chevron-down text-gray-400 transition-transform"></i>
+                    </button>
+                    <div class="faq-content px-6 pb-4 hidden">
+                        <p class="text-gray-600">支持所有主流浏览器，包括Chrome、Firefox、Safari、Edge等。建议使用最新版本以获得最佳体验。</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-soft overflow-hidden">
+                    <button class="faq-toggle w-full px-6 py-4 text-left font-medium flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <span>提取失败怎么办？</span>
+                        <i class="fa fa-chevron-down text-gray-400 transition-transform"></i>
+                    </button>
+                    <div class="faq-content px-6 pb-4 hidden">
+                        <p class="text-gray-600">请检查链接是否完整正确，或尝试刷新页面后重新提取。如仍有问题，可能是平台接口更新，请稍后再试。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-12">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
+                            <i class="fa fa-play-circle text-white text-xl"></i>
+                        </div>
+                        <span class="text-xl font-bold">VideoExtractor</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">专业的在线视频链接提取工具，简单、快速、安全。</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">快速链接</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">首页</a></li>
+                        <li><a href="#features" class="hover:text-white transition-colors">功能介绍</a></li>
+                        <li><a href="#platforms" class="hover:text-white transition-colors">支持平台</a></li>
+                        <li><a href="#faq" class="hover:text-white transition-colors">常见问题</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">支持平台</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li>抖音视频解析</li>
+                        <li>B站视频解析</li>
+                        <li>YouTube解析</li>
+                        <li>快手视频解析</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">免责声明</h4>
+                    <p class="text-gray-400 text-sm">本工具仅供学习交流使用，提取的视频版权归原作者所有。请勿用于商业用途。</p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+                <p>© 2024 VideoExtractor. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast 提示 -->
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-dark text-white rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <span id="toastMessage">操作成功</span>
+    </div>
+
+    <script>
+        // DOM 元素
+        const videoUrlInput = document.getElementById('videoUrl');
+        const extractBtn = document.getElementById('extractBtn');
+        const resultSection = document.getElementById('resultSection');
+        const loadingSection = document.getElementById('loadingSection');
+        const errorSection = document.getElementById('errorSection');
+        const errorMessage = document.getElementById('errorMessage');
+        const retryBtn = document.getElementById('retryBtn');
+        const platformBtns = document.querySelectorAll('.platform-btn');
+        const faqToggles = document.querySelectorAll('.faq-toggle');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // 平台示例链接
+        const platformExamples = {
+            douyin: 'https://v.douyin.com/example/',
+            bilibili: 'https://www.bilibili.com/video/BV1xx411c7mZ',
+            youtube: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            xiaohongshu: 'https://www.xiaohongshu.com/discovery/item/example',
+            kuaishou: 'https://www.kuaishou.com/short-video/example'
+        };
+
+        // 显示 Toast
+        function showToast(message, type = 'success') {
+            toastMessage.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            if (type === 'error') {
+                toast.classList.add('bg-red-600');
+                toast.classList.remove('bg-dark');
+            } else {
+                toast.classList.remove('bg-red-600');
+                toast.classList.add('bg-dark');
+            }
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
+        }
+
+        // 隐藏所有区域
+        function hideAllSections() {
+            resultSection.classList.add('hidden');
+            loadingSection.classList.add('hidden');
+            errorSection.classList.add('hidden');
+        }
+
+        // 识别平台
+        function detectPlatform(url) {
+            if (url.includes('douyin') || url.includes('iesdouyin')) return 'douyin';
+            if (url.includes('bilibili') || url.includes('b23.tv')) return 'bilibili';
+            if (url.includes('youtube') || url.includes('youtu.be')) return 'youtube';
+            if (url.includes('xiaohongshu') || url.includes('xhslink')) return 'xiaohongshu';
+            if (url.includes('kuaishou') || url.includes('gifshow')) return 'kuaishou';
+            return 'unknown';
+        }
+
+        // 获取平台名称
+        function getPlatformName(platform) {
+            const names = {
+                douyin: '抖音',
+                bilibili: 'B站',
+                youtube: 'YouTube',
+                xiaohongshu: '小红书',
+                kuaishou: '快手'
+            };
+            return names[platform] || '未知平台';
+        }
+
+        // 平台快捷按钮
+        platformBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const platform = btn.dataset.platform;
+                videoUrlInput.value = platformExamples[platform];
+                videoUrlInput.focus();
+                showToast(`已填入${getPlatformName(platform)}示例链接`);
+            });
+        });
+
+        // 重试按钮
+        retryBtn.addEventListener('click', () => {
+            const url = videoUrlInput.value.trim();
+            extractVideo(url);
+        });
+
+        // FAQ 折叠
+        faqToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const content = toggle.nextElementSibling;
+                const icon = toggle.querySelector('i');
+                
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+
+        // 复制链接功能
+        document.getElementById('copyHdLink').addEventListener('click', () => {
+            navigator.clipboard.writeText(videoUrlInput.value).then(() => {
+                showToast('高清链接已复制到剪贴板');
+            });
+        });
+
+        document.getElementById('copySdLink').addEventListener('click', () => {
+            navigator.clipboard.writeText(videoUrlInput.value).then(() => {
+                showToast('标清链接已复制到剪贴板');
+            });
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+
+</body></html>
