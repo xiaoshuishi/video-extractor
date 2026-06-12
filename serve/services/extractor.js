@@ -411,27 +411,37 @@ function extractYoutubeId(url) {
 
 
 
-async function extractWeibo(url) {
-    try {
-        const res = await axios.get(url, {timeout:15000,headers:{"User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 17_0) AppleWebKit/537.36"}});
-        const vm = res.data.match(/["']stream_url["']\s*:\s*["']([^"']+)["']/);
-        const tm = res.data.match(/["']status_title["']\s*:\s*["']([^"']+)["']/);
-        return {success:true,platform:"weibo",data:{title:tm?tm[1].replace(/\\u[\dA-F]{4}/gi,""):"微博视频",author:"微博用户",thumbnail:"",hd:{url:vm?vm[1]:url,quality:"HD"},sd:{url:vm?vm[1]:url,quality:"SD"},audio:{url:"",quality:"Audio"}}};
-    } catch(e) { throw new Error("微博解析失败: "+e.message); }
-}
-
-async function extractInstagram(url) {
-    try {
-        const r = await axios.get("https://api.instagram.com/oembed?url="+encodeURIComponent(url), {timeout:10000});
-        return {success:true,platform:"instagram",data:{title:r.data.title||"Instagram",author:r.data.author_name||"用户",thumbnail:r.data.thumbnail_url||"",hd:{url:url,quality:"HD"},sd:{url:url,quality:"SD"},audio:{url:"",quality:"Audio"}}};
-    } catch(e) { throw new Error("Instagram解析失败: "+e.message); }
-}
-
 async function extractTwitter(url) {
     try {
         const r = await axios.get("https://publish.twitter.com/oembed?url="+encodeURIComponent(url), {timeout:10000});
         return {success:true,platform:"twitter",data:{title:r.data.author_name+"的推文",author:r.data.author_name||"用户",thumbnail:r.data.thumbnail_url||"",hd:{url:url,quality:"HD"},sd:{url:url,quality:"SD"},audio:{url:"",quality:"Audio"}}};
     } catch(e) { throw new Error("X/Twitter解析失败: "+e.message); }
+}
+
+
+async function extractWeibo(url) {
+    try {
+        var res = await axios.get(url, {timeout:15000,headers:{"User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 17_0) AppleWebKit/537.36"}});
+        var html = res.data;
+        var title = "微博视频";
+        var match = html.match(/stream_url[\s]*:[\s]*["']([^"']+)["']/);
+        var videoUrl = match ? match[1] : url;
+        return {success:true,platform:"weibo",data:{title:title,author:"微博用户",thumbnail:"",hd:{url:videoUrl,quality:"HD"},sd:{url:videoUrl,quality:"SD"},audio:{url:"",quality:"Audio"}}};
+    } catch(e) { throw new Error("微博解析失败: " + e.message); }
+}
+
+async function extractInstagram(url) {
+    try {
+        var r = await axios.get("https://api.instagram.com/oembed?url="+encodeURIComponent(url), {timeout:10000});
+        return {success:true,platform:"instagram",data:{title:r.data.title||"Instagram",author:r.data.author_name||"用户",thumbnail:r.data.thumbnail_url||"",hd:{url:url,quality:"HD"},sd:{url:url,quality:"SD"},audio:{url:"",quality:"Audio"}}};
+    } catch(e) { throw new Error("Instagram解析失败: " + e.message); }
+}
+
+async function extractTwitter(url) {
+    try {
+        var r = await axios.get("https://publish.twitter.com/oembed?url="+encodeURIComponent(url), {timeout:10000});
+        return {success:true,platform:"twitter",data:{title:(r.data.author_name||"用户")+"的推文",author:r.data.author_name||"用户",thumbnail:r.data.thumbnail_url||"",hd:{url:url,quality:"HD"},sd:{url:url,quality:"SD"},audio:{url:"",quality:"Audio"}}};
+    } catch(e) { throw new Error("X/Twitter解析失败: " + e.message); }
 }
 
 module.exports = { extract, detectPlatform };
