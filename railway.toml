@@ -1,15 +1,6 @@
-[railway]
-  service = "video-extractor"
-  language = "node"
+[build]
+builder = "NIXPACKS"
 
-[railway.variables]
-  PORT = 3000
-
-# 构建配置
-[railway.build]
-  builder = "NIXPACKS"
-
-# 部署配置
-[railway.deploy]
-  startCommand = "npm start"
-  healthCheckPath = "/api/health"
+[deploy]
+startCommand = "npm start"
+healthCheckPath = "/api/health"
